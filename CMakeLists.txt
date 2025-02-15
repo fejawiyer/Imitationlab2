@@ -1,1 +1,6 @@
-add_executable(main main.cpp)
+project(Imitation_lab_2)
+set(SOURCE_EXE main.cpp)
+set(SOURCE_LIB imitation.cpp)	
+add_library(imitation STATIC ${SOURCE_LIB})
+add_executable(main ${SOURCE_EXE})
+target_link_libraries(main imitation)
