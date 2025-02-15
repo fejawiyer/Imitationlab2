@@ -10,35 +10,35 @@
 
 int main()
 {
-    setlocale(LC_ALL, "Russian"); // Установка кодировки, поддерживающий русский язык
-    size_t progonsCount, points, imitationCount, pointsInCircle = 0; // создание переменных
-    double radius, x0, y0; // создание переменных с плавающей запятой для центра
+    setlocale(LC_ALL, "Russian"); // РЈСЃС‚Р°РЅРѕРІРєР° РєРѕРґРёСЂРѕРІРєРё, РїРѕРґРґРµСЂР¶РёРІР°СЋС‰РёР№ СЂСѓСЃСЃРєРёР№ СЏР·С‹Рє
+    size_t progonsCount, points, imitationCount, pointsInCircle = 0; // СЃРѕР·РґР°РЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С…
+    double radius, x0, y0; // СЃРѕР·РґР°РЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С… СЃ РїР»Р°РІР°СЋС‰РµР№ Р·Р°РїСЏС‚РѕР№ РґР»СЏ С†РµРЅС‚СЂР°
 
     std::random_device rd;
     std::mt19937 generator(rd());
-    // Ввод значений с клавиатуры
-    std::cout << "Введите радиус круга:";
+    // Р’РІРѕРґ Р·РЅР°С‡РµРЅРёР№ СЃ РєР»Р°РІРёР°С‚СѓСЂС‹
+    std::cout << "Р’РІРµРґРёС‚Рµ СЂР°РґРёСѓСЃ РєСЂСѓРіР°:";
     std::cin >> radius;
-    std::cout << "Введите координаты центра круга (x):";
+    std::cout << "Р’РІРµРґРёС‚Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР° РєСЂСѓРіР° (x):";
     std::cin >> x0;
-    std::cout << "Введите координаты центра круга (y):";
+    std::cout << "Р’РІРµРґРёС‚Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР° РєСЂСѓРіР° (y):";
     std::cin >> y0;
-    std::cout << "Введите размер выборки:";
+    std::cout << "Р’РІРµРґРёС‚Рµ СЂР°Р·РјРµСЂ РІС‹Р±РѕСЂРєРё:";
     std::cin >> points;
-    std::cout << "Введите количество имитаций:";
+    std::cout << "Р’РІРµРґРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ РёРјРёС‚Р°С†РёР№:";
     std::cin >> imitationCount;
-    std::cout << "Введите количество прогонов:";
+    std::cout << "Р’РІРµРґРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРѕРіРѕРЅРѕРІ:";
     std::cin >> progonsCount;
 
-    // Вычисление площади квадрата
-    double squareArea = 4*radius*radius; // Площадь квадрата - удвоенное произведение стороны. Сторона равна 2*radius, тогда 2*radius*2*radius=4*radius^2 - площадь квадрата
+    // Р’С‹С‡РёСЃР»РµРЅРёРµ РїР»РѕС‰Р°РґРё РєРІР°РґСЂР°С‚Р°
+    double squareArea = 4*radius*radius; // РџР»РѕС‰Р°РґСЊ РєРІР°РґСЂР°С‚Р° - СѓРґРІРѕРµРЅРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ СЃС‚РѕСЂРѕРЅС‹. РЎС‚РѕСЂРѕРЅР° СЂР°РІРЅР° 2*radius, С‚РѕРіРґР° 2*radius*2*radius=4*radius^2 - РїР»РѕС‰Р°РґСЊ РєРІР°РґСЂР°С‚Р°
 
-    Imitation::Circle circle = {radius, x0, y0}; // Создание круга
+    Imitation::Circle circle = {radius, x0, y0}; // РЎРѕР·РґР°РЅРёРµ РєСЂСѓРіР°
 
-    std::cout << "Площадь круга(аналитически):" << std::acos(-1)*radius*radius << std::endl;
+    std::cout << "РџР»РѕС‰Р°РґСЊ РєСЂСѓРіР°(Р°РЅР°Р»РёС‚РёС‡РµСЃРєРё):" << std::acos(-1)*radius*radius << std::endl;
 
-    std::vector<std::vector<double>> table(progonsCount+2, std::vector<double>(imitationCount)); // Создание матрицы для хранения значения
-    // Первые 5 строк - прогоны, 6 строка - выборочное среднее по прогонам, 7 строка - дисперсия
+    std::vector<std::vector<double>> table(progonsCount+2, std::vector<double>(imitationCount)); // РЎРѕР·РґР°РЅРёРµ РјР°С‚СЂРёС†С‹ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Р·РЅР°С‡РµРЅРёСЏ
+    // РџРµСЂРІС‹Рµ 5 СЃС‚СЂРѕРє - РїСЂРѕРіРѕРЅС‹, 6 СЃС‚СЂРѕРєР° - РІС‹Р±РѕСЂРѕС‡РЅРѕРµ СЃСЂРµРґРЅРµРµ РїРѕ РїСЂРѕРіРѕРЅР°Рј, 7 СЃС‚СЂРѕРєР° - РґРёСЃРїРµСЂСЃРёСЏ
 
 
     std::vector<Imitation::Point> points_vector;
@@ -70,52 +70,52 @@ int main()
     rows_names.push_back("Average");
     rows_names.push_back("St. error");
 
-    // Данный цикл добавляет в table выборочное среднее
+    // Р”Р°РЅРЅС‹Р№ С†РёРєР» РґРѕР±Р°РІР»СЏРµС‚ РІ table РІС‹Р±РѕСЂРѕС‡РЅРѕРµ СЃСЂРµРґРЅРµРµ
     for(size_t j = 0; j<imitationCount; j++) {
         double res = 0;
         for(size_t k = 0; k<progonsCount; k++) {
-            res += table[k][j]; // сумма элементов по прогону
+            res += table[k][j]; // СЃСѓРјРјР° СЌР»РµРјРµРЅС‚РѕРІ РїРѕ РїСЂРѕРіРѕРЅСѓ
         }
-        table[progonsCount][j] = res/progonsCount; // делить на количество прогонов, получать среднее
-        res = 0; // обнуление результата для следующей имитации
+        table[progonsCount][j] = res/progonsCount; // РґРµР»РёС‚СЊ РЅР° РєРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРѕРіРѕРЅРѕРІ, РїРѕР»СѓС‡Р°С‚СЊ СЃСЂРµРґРЅРµРµ
+        res = 0; // РѕР±РЅСѓР»РµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РґР»СЏ СЃР»РµРґСѓСЋС‰РµР№ РёРјРёС‚Р°С†РёРё
     }
-    // Данный цикл считает ст. откл.
+    // Р”Р°РЅРЅС‹Р№ С†РёРєР» СЃС‡РёС‚Р°РµС‚ СЃС‚. РѕС‚РєР».
     for(size_t j = 0; j<imitationCount; j++) {
-        std::vector<double> tmp; // вектор для временного хранения данных
+        std::vector<double> tmp; // РІРµРєС‚РѕСЂ РґР»СЏ РІСЂРµРјРµРЅРЅРѕРіРѕ С…СЂР°РЅРµРЅРёСЏ РґР°РЅРЅС‹С…
         for(size_t k = 0; k<progonsCount; k++) {
-            tmp.push_back(table[k][j]); // меняем строки со столбцами
+            tmp.push_back(table[k][j]); // РјРµРЅСЏРµРј СЃС‚СЂРѕРєРё СЃРѕ СЃС‚РѕР»Р±С†Р°РјРё
         }
-        double m = Imitation::mean(tmp); // вычисляем среднее
+        double m = Imitation::mean(tmp); // РІС‹С‡РёСЃР»СЏРµРј СЃСЂРµРґРЅРµРµ
 
-        double first_sum = 0; // сумма
+        double first_sum = 0; // СЃСѓРјРјР°
 
         for(size_t k = 0; k<progonsCount; k++) {
             first_sum += (tmp[k]-m)*(tmp[k]-m);
         }
-        double standard_dif = std::sqrt(first_sum/(double)progonsCount); // стандартное отклонение (по формуле)
-        table[progonsCount+1][j] = standard_dif; // добавляем последней строкой в таблицу
-        tmp.clear(); // зануляем вектор
+        double standard_dif = std::sqrt(first_sum/(double)progonsCount); // СЃС‚Р°РЅРґР°СЂС‚РЅРѕРµ РѕС‚РєР»РѕРЅРµРЅРёРµ (РїРѕ С„РѕСЂРјСѓР»Рµ)
+        table[progonsCount+1][j] = standard_dif; // РґРѕР±Р°РІР»СЏРµРј РїРѕСЃР»РµРґРЅРµР№ СЃС‚СЂРѕРєРѕР№ РІ С‚Р°Р±Р»РёС†Сѓ
+        tmp.clear(); // Р·Р°РЅСѓР»СЏРµРј РІРµРєС‚РѕСЂ
     }
 
     Imitation::Table t(table, cols_names, rows_names, 3, 3);
     std::cout << t.to_string() << std::endl;
 
-    Imitation::Rhombus rhombus = {1, 2, 1.5, 1.5, 1.5, 1.5, 2, 1}; // Создаём ромб
+    Imitation::Rhombus rhombus = {1, 2, 1.5, 1.5, 1.5, 1.5, 2, 1}; // РЎРѕР·РґР°С‘Рј СЂРѕРјР±
 
 
-    // Следующий цикл обнуляет таблицу, которую мы использовали
+    // РЎР»РµРґСѓСЋС‰РёР№ С†РёРєР» РѕР±РЅСѓР»СЏРµС‚ С‚Р°Р±Р»РёС†Сѓ, РєРѕС‚РѕСЂСѓСЋ РјС‹ РёСЃРїРѕР»СЊР·РѕРІР°Р»Рё
     for(auto& row: table) {
         for(auto& element: row) {
             element = 0.0f;
         }
     }
 
-    size_t pointsInRhombus = 0; // В этой переменной будем считать количество точек в ромбе
+    size_t pointsInRhombus = 0; // Р’ СЌС‚РѕР№ РїРµСЂРµРјРµРЅРЅРѕР№ Р±СѓРґРµРј СЃС‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РІ СЂРѕРјР±Рµ
 
     std::vector<double> min_coords_for_rhombus = {1, 1};
     std::vector<double> max_coords_for_rhombus = {2, 2};
 
-    // Данный код проделывает аналогичные операции для ромба
+    // Р”Р°РЅРЅС‹Р№ РєРѕРґ РїСЂРѕРґРµР»С‹РІР°РµС‚ Р°РЅР°Р»РѕРіРёС‡РЅС‹Рµ РѕРїРµСЂР°С†РёРё РґР»СЏ СЂРѕРјР±Р°
     for(size_t progons = 0; progons < progonsCount; progons++) {
         for(size_t i = 0; i < imitationCount; i++) {
             points_vector = Imitation::generate_random_point((i+1)*points, min_coords_for_rhombus, max_coords_for_rhombus, generator);
@@ -156,6 +156,6 @@ int main()
         tmp.clear();
     }
     Imitation::Table t2(table, cols_names, rows_names, 3, 3);
-    std::cout << "Площадь ромба(аналитически):0.5" << std::endl;
+    std::cout << "РџР»РѕС‰Р°РґСЊ СЂРѕРјР±Р°(Р°РЅР°Р»РёС‚РёС‡РµСЃРєРё):0.5" << std::endl;
     std::cout << t2.to_string() << std::endl;
 }
