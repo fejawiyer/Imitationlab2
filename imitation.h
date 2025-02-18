@@ -19,12 +19,6 @@ namespace Imitation {
         std::vector<double> coordinates;
     };
     Point generate_random_point(std::vector<double> min_coords, std::vector<double> max_coords);
-    bool generate_flip ();
-    std::vector<bool> generate_flip(size_t n);
-    double generate_double(double g_min, double g_max);
-    std::vector<double> generate_double(size_t n, double g_min, double g_max);
-    int generate_integer(int g_min, int g_max);
-    std::vector<int> generate_integer(size_t n, int g_min, int g_max);
     class Circle {
     public:
         Circle(double r);
@@ -40,6 +34,11 @@ namespace Imitation {
     public:
         Table(std::vector<std::vector<double>> cells, std::vector<std::string> cols_names, std::vector<std::string> rows_names, uint8_t spaces, uint8_t precision);
         std::string to_string() const;
+        std::vector<std::vector<double>> get_numbers();
+        std::vector<std::string> get_rows_names();
+        std::vector<std::string> get_cols_names();
+        void makefile_by_table(std::string file_name, double square);
+        void pythonize();
     private:
         int rows;
         int cols;
@@ -52,8 +51,6 @@ namespace Imitation {
     };
     int digits(int num);
     double mean(std::vector<double> numbers);
-    std::ostream& operator << (std::ostream &os, const Imitation::Table &table);
-    std::ostream& operator << (std::ostream &os, const Imitation::Point &point);
     class Rhombus {
     public:
         Rhombus(double x_left, double x_right, double x_top, double x_bot, double y_left, double y_right, double y_top, double y_bot);
@@ -69,3 +66,5 @@ namespace Imitation {
         double y_bot;
     };
 }
+std::ostream& operator << (std::ostream &os, const Imitation::Table &table);
+std::ostream& operator << (std::ostream &os, const Imitation::Point &point);
