@@ -15,7 +15,8 @@ int main()
     double radius, x0, y0; // создание переменных с плавающей запятой для центра
 
     std::random_device rd;
-    std::mt19937 generator(rd());
+    std::mt19937 generator(rd()); // ГПСЧ (Вихрь Мерсенна)
+    // Данный генератор работает качественее и быстрее чем встроенный rand()
     // Ввод значений с клавиатуры
     std::cout << "Введите радиус круга:";
     std::cin >> radius;
@@ -41,34 +42,37 @@ int main()
     // Первые 5 строк - прогоны, 6 строка - выборочное среднее по прогонам, 7 строка - дисперсия
 
 
-    std::vector<Imitation::Point> points_vector;
-    points_vector.reserve(points);
-    std::vector<double> min_coords = {x0-radius, y0-radius};
-    std::vector<double> max_coords = {x0+radius, y0+radius};
+    std::vector<Imitation::Point> points_vector; // вектор точек
+    points_vector.reserve(points); // резервируем память
+    std::vector<double> min_coords = {x0-radius, y0-radius}; // минимальные координаты (левый нижний угод квадрата)
+    std::vector<double> max_coords = {x0+radius, y0+radius}; // максимальные координаты (правый верхний угол квадрата)
 
-    double square;
-    std::vector<std::string>cols_names;
-    std::vector<std::string>rows_names;
+    double square; // площадь
+
+    std::vector<std::string>cols_names; // вектор имен столбцов
+    std::vector<std::string>rows_names; // вектор имен строк
+
     for(size_t i = 0; i<progonsCount; i++) {
-        points_vector.clear();
-        rows_names.push_back("Progon " + std::to_string(i+1));
+        points_vector.clear(); // очищаем вектор
+        rows_names.push_back("Progon " + std::to_string(i+1)); // добавляем в вектор строк строки вида Progon1, Progon2, ...
         for(size_t j = 0; j<imitationCount; j++) {
-            points_vector = Imitation::generate_random_point((j+1)*points, min_coords, max_coords, generator);
-            for (Imitation::Point &k : points_vector) {
-                if(circle.is_point_in_circle(k)) {
-                    pointsInCircle++;
+            points_vector = Imitation::generate_random_point((j+1)*points, min_coords, max_coords, generator); // Создаем (j+1)*points точек с минимальными координатами
+            for (Imitation::Point &k : points_vector) { // Для каждой точки из вектора
+                if(circle.is_point_in_circle(k)) { // Если она лежит в круге
+                    pointsInCircle++; // Увеличить переменную pointsInCircle на 1
                 }
             }
-            square = (static_cast<double>(pointsInCircle)/points_vector.size()) * squareArea;
-            table[i][j] = square;
-            pointsInCircle = 0;
+            square = (static_cast<double>(pointsInCircle)/points_vector.size()) * squareArea; // Площадь
+            // Площадь считается так: кол-во точек в круге делится на размер вектора и умножается на площадь квадрата
+            table[i][j] = square; // Результат заносится в таблицу
+            pointsInCircle = 0; // Обнуляем счетчик
         }
     }
     for(size_t i = 0; i<imitationCount; i++) {
-        cols_names.push_back("Imitation " + std::to_string(i+1));
+        cols_names.push_back("Imitation " + std::to_string(i+1)); // В данном цикле заполняются названия столбцов вида Imitation 1, Imitation 2, ...
     }
-    rows_names.push_back("Average");
-    rows_names.push_back("St. error");
+    rows_names.push_back("Average"); // В строки добавляется Average
+    rows_names.push_back("St. error"); // Также добавляется St. Error
 
     // Данный цикл добавляет в table выборочное среднее
     for(size_t j = 0; j<imitationCount; j++) {
@@ -97,8 +101,8 @@ int main()
         tmp.clear(); // зануляем вектор
     }
 
-    Imitation::Table t(table, cols_names, rows_names, 3, 3);
-    std::cout << t.to_string() << std::endl;
+    Imitation::Table t(table, cols_names, rows_names, 3, 3); // Создание таблицы с отступами в 3 пробела и точностью 3
+    std::cout << t << std::endl; // Вывод таблицы с помощью перегруженного оператора <<
 
     Imitation::Rhombus rhombus = {1, 2, 1.5, 1.5, 1.5, 1.5, 2, 1}; // Создаём ромб
 
@@ -155,7 +159,28 @@ int main()
         table[progonsCount+1][j] = standard_dif;
         tmp.clear();
     }
+
     Imitation::Table t2(table, cols_names, rows_names, 3, 3);
     std::cout << "Площадь ромба(аналитически):0.5" << std::endl;
-    std::cout << t2.to_string() << std::endl;
+    std::cout << t2 << std::endl;
+
+    t2.makefile_by_table("table_1.cfg", 0.5); // Создаётся файл содержащий имена столбцов, строк, ячейки.
+    t.makefile_by_table("table_2.cfg", std::acos(-1)*radius*radius);
+
+    if (system("where python >nul 2>nul") != 0) { // Если не установлен Python
+        std::cout << "Не удалось создать файл excel:";
+        std::cout << "Python не найден в PATH." << std::endl;
+        return 0;
+    }
+    if(system("python -c \"import pandas\"") != 0) { // Библиотека pandas
+        std::cout << "Не удалось создать файл excel:";
+        std::cout << "Не найдена библиотека pandas." << std::endl;
+        return 0;
+    }
+    if(system("python -c \"import openpyxl\"") != 0) { // Библиотека openpyxl
+        std::cout << "Не удалось создать файл excel:";
+        std::cout << "Не найдена библиотека openpyxl." << std::endl;
+        return 0;
+    }
+    t2.pythonize(); // Выполняется скрипт Python, создающий excel файл на основе двух таблиц.
 }
