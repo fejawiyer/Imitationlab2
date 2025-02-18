@@ -8,6 +8,12 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <cstdlib>
+
+#define python_path "python excel_script.py table_1.cfg table_2.cfg"
+
 namespace Imitation {
     Point::Point(std::initializer_list<double> coords) {
         for (auto coord : coords) {
@@ -53,45 +59,6 @@ namespace Imitation {
                 coords.push_back(distribution(generator));
             }
             res.push_back(coords);
-        }
-        return res;
-    }
-    bool generate_flip () {
-        static std::mt19937 generator(static_cast<unsigned int>(time(0)));
-        std::uniform_real_distribution<double> distribution(0, 1);
-        bool res;
-        if (distribution(generator) <= 0.5) res = false;
-        else res = true;
-        return res;
-    }
-    std::vector<bool> generate_flip(size_t n) {
-        std::vector<bool> res;
-        for(;n>0;n--) {
-            res.push_back(generate_flip());
-        }
-        return res;
-    }
-    double generate_double(double g_min, double g_max) {
-        static std::mt19937 generator(static_cast<unsigned int>(time(0)));
-        std::uniform_real_distribution<double> distribution(g_min, g_max);
-        return distribution(generator);
-    }
-    std::vector<double> generate_double(size_t n, double g_min, double g_max) {
-        std::vector<double> res;
-        for(;n>0;n--) {
-            res.push_back(generate_double(g_min, g_max));
-        }
-        return res;
-    }
-    int generate_integer(int g_min, int g_max) {
-        static std::mt19937 generator(static_cast<unsigned int>(time(0)));
-        std::uniform_real_distribution<double> distribution(g_min, g_max);
-        return static_cast<int>(distribution(generator));
-    }
-    std::vector<int> generate_integer(size_t n, int g_min, int g_max) {
-        std::vector<int> res;
-        for(;n>0;n--) {
-            res.push_back(generate_double(g_min, g_max));
         }
         return res;
     }
@@ -155,6 +122,15 @@ namespace Imitation {
         }
         return res;
     }
+    std::vector<std::vector<double>> Table::get_numbers() {
+        return this->cells;
+    }
+    std::vector<std::string> Table::get_rows_names() {
+        return this->rows_names;
+    }
+    std::vector<std::string> Table::get_cols_names() {
+        return this->cols_names;
+    }
     int digits(int num) {
         int res = 0;
         do {
@@ -186,8 +162,42 @@ namespace Imitation {
         double d2 = (x_right - x_top) * (p.get_coordinates()[1] - y_top) - (y_right - y_top) * (p.get_coordinates()[0] - x_top);
         double d3 = (x_bot - x_right) * (p.get_coordinates()[1] - y_right) - (y_bot - y_right) * (p.get_coordinates()[0] - x_right);
         double d4 = (x_left - x_bot) * (p.get_coordinates()[1] - y_bot) - (y_left - y_bot) * (p.get_coordinates()[0] - x_bot);
-        // Åñëè âñå ïðîèçâåäåíèÿ èìåþò îäèíàêîâûé çíàê, òî÷êà íàõîäèòñÿ âíóòðè ðîìáà
+        // Ð•ÑÐ»Ð¸ Ð²ÑÐµ Ð¿Ñ€Ð¾Ð¸Ð·Ð²ÐµÐ´ÐµÐ½Ð¸Ñ Ð¸Ð¼ÐµÑŽÑ‚ Ð¾Ð´Ð¸Ð½Ð°ÐºÐ¾Ð²Ñ‹Ð¹ Ð·Ð½Ð°Ðº, Ñ‚Ð¾Ñ‡ÐºÐ° Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð²Ð½ÑƒÑ‚Ñ€Ð¸ Ñ€Ð¾Ð¼Ð±Ð°
         return (d1 >= 0 && d2 >= 0 && d3 >= 0 && d4 >= 0) || (d1 <= 0 && d2 <= 0 && d3 <= 0 && d4 <= 0);
+    }
+    void Table::makefile_by_table(std::string file_name, double square) {
+        std::ofstream out (file_name);
+        std::string out_string = "rows_names=";
+        for (auto j: rows_names) {
+            out_string.append(j);
+            out_string.append(",");
+        }
+        out_string.pop_back();
+        out_string.append("\ncols_names=");
+        for (auto j: cols_names) {
+            out_string.append(j);
+            out_string.append(",");
+        }
+        out_string.pop_back();
+        out_string.append("\ncells=");
+        for (auto i: cells) {
+            for(auto j: i) {
+                std::string str = std::to_string(j);
+                std::replace(str.begin(), str.end(), ',', '.');
+                out_string.append(str);
+                out_string.append(",");
+            }
+        }
+        out_string.pop_back();
+        out_string.append("\nsquare=");
+        std::string str = std::to_string(square);
+        std::replace(str.begin(), str.end(), ',', '.');
+        out_string.append(str);
+        out << out_string;
+        out.close();
+    }
+    void Table::pythonize() {
+        system(python_path);
     }
 }
 std::ostream& operator << (std::ostream &os, const Imitation::Point &point)
